@@ -40,7 +40,8 @@ async def chat(message: str):
     response.raise_for_status()
 
     data = response.json()
-
+def a():
+    
     return {
         "response": data["choices"][0]["message"]["content"]
     }
