@@ -45,4 +45,7 @@ async def chat(message: str):
         "response": data["choices"][0]["message"]["content"]
     }
 def sum():
-    print("sum")
+    print("
+
+def add():
+    print("A")
