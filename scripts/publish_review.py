@@ -1,8 +1,11 @@
 import argparse
 import json
+import logging
 import os
 import urllib.error
 import urllib.request
+
+logger = logging.getLogger(__name__)
 
 
 def comment(pr_number: str, body: str) -> None:
@@ -49,7 +52,7 @@ def comment(pr_number: str, body: str) -> None:
                     f"GitHub API returned HTTP {response.status}"
                 )
 
-            print("✅ AI review successfully published to GitHub PR")
+            logger.info("✅ AI review successfully published to GitHub PR")
 
 
     except urllib.error.HTTPError as exc:
