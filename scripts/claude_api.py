@@ -1,9 +1,8 @@
 import os
 import json
-import os
-import json
 import logging
 from pathlib import Path
+from typing import Any
 
 import anthropic
 from json_repair import repair_json
@@ -86,12 +85,23 @@ client = anthropic.Anthropic(
 def load_skill(skill_name: str) -> str:
     project_root = Path(__file__).resolve().parent.parent
 
+    # Try standard skills dir first
     skill_file = (
         project_root
         / "skills"
         / skill_name
         / "skills.md"
     )
+
+    if not skill_file.exists():
+        # Fall back to custom skills dir
+        skill_file = (
+            project_root
+            / "skills"
+            / "custom"
+            / skill_name
+            / "skills.md"
+        )
 
     if not skill_file.exists():
         raise FileNotFoundError(
@@ -110,7 +120,7 @@ def review_code(
     selected_skills: list[str] | None = None,
     review_mode: str = "PR",
     repository_context: str = "",
-    **kwargs,
+    **kwargs: Any,
 ):
     # Load ONLY the skills selected by the user
     skills_content = []
@@ -185,7 +195,7 @@ Return ONLY the JSON format specified
 by the applicable skill instructions.
 """
 
-    print(f"Calling Claude model: {MODEL}")
+    logger.info(f"Calling Claude model: {MODEL}")
 
     response = client.messages.create(
         model=MODEL,
@@ -237,8 +247,8 @@ by the applicable skill instructions.
             repaired = repair_json(text)
             review = json.loads(repaired)
         except Exception as exc:
-            print("Claude returned invalid JSON:")
-            print(text[:5000])
+            logger.info("Claude returned invalid JSON:")
+            logger.info(text[:5000])
             raise RuntimeError(
                 "Claude response was not valid JSON."
             ) from exc
